@@ -244,7 +244,7 @@ module Ibandit
       )
         true
       else
-        @errors[:bank_code] = Ibandit.translate(:is_invalid)
+        @errors[:bank_code] = Ibandit.translate(:has_invalid_format)
         false
       end
     end
@@ -258,7 +258,7 @@ module Ibandit
       )
         true
       else
-        @errors[:branch_code] = Ibandit.translate(:is_invalid)
+        @errors[:branch_code] = Ibandit.translate(:has_invalid_format)
         false
       end
     end
@@ -271,7 +271,7 @@ module Ibandit
       )
         true
       else
-        @errors[:account_number] = Ibandit.translate(:is_invalid)
+        @errors[:account_number] = Ibandit.translate(:has_invalid_format)
         false
       end
     end
@@ -329,7 +329,7 @@ module Ibandit
     def valid_swedish_swift_details?
       unless Sweden::Validator.bank_code_exists?(swift_bank_code)
         bank_code_field = bank_code.nil? ? :account_number : :bank_code
-        @errors[bank_code_field] = Ibandit.translate(:is_invalid)
+        @errors[bank_code_field] = Ibandit.translate(:bank_code_does_not_exist)
         @errors.delete(:bank_code) if bank_code.nil?
         return false
       end
@@ -341,7 +341,7 @@ module Ibandit
         )
 
       unless length_valid
-        @errors[:account_number] = Ibandit.translate(:is_invalid)
+        @errors[:account_number] = Ibandit.translate(:has_invalid_length)
         return false
       end
 
@@ -350,7 +350,7 @@ module Ibandit
 
     def valid_swedish_local_details?
       unless Sweden::Validator.valid_clearing_code_length?(branch_code)
-        @errors[:branch_code] = Ibandit.translate(:is_invalid)
+        @errors[:branch_code] = Ibandit.translate(:has_invalid_clearing_code_length)
         return false
       end
 
@@ -360,7 +360,7 @@ module Ibandit
       )
 
       unless valid_serial_number
-        @errors[:account_number] = Ibandit.translate(:is_invalid)
+        @errors[:account_number] = Ibandit.translate(:has_invalid_serial_number)
         return false
       end
 
@@ -407,7 +407,7 @@ module Ibandit
           1 * (code_digits[2] + code_digits[5] + code_digits[8])
         ) % 10
 
-      @errors[:bank_code] = Ibandit.translate(:is_invalid) unless mod.zero?
+      @errors[:bank_code] = Ibandit.translate(:failed_checksum_test) unless mod.zero?
 
       mod.zero?
     end
@@ -515,21 +515,21 @@ module Ibandit
     def valid_modulus_check_bank_code?
       return true if Ibandit.modulus_checker.valid_bank_code?(self)
 
-      @errors[:bank_code] = Ibandit.translate(:is_invalid)
+      @errors[:bank_code] = Ibandit.translate(:failed_modulus_check)
       false
     end
 
     def valid_modulus_check_branch_code?
       return true if Ibandit.modulus_checker.valid_branch_code?(self)
 
-      @errors[:branch_code] = Ibandit.translate(:is_invalid)
+      @errors[:branch_code] = Ibandit.translate(:failed_modulus_check)
       false
     end
 
     def valid_modulus_check_account_number?
       return true if Ibandit.modulus_checker.valid_account_number?(self)
 
-      @errors[:account_number] = Ibandit.translate(:is_invalid)
+      @errors[:account_number] = Ibandit.translate(:failed_modulus_check)
       false
     end
 
@@ -551,7 +551,7 @@ module Ibandit
     def account_number_not_all_zeros?
       return true if @swift_account_number.to_s.chars.uniq != ["0"]
 
-      @errors[:account_number] = Ibandit.translate(:is_invalid)
+      @errors[:account_number] = Ibandit.translate(:cannot_be_all_zeros)
       false
     end
   end
